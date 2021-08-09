@@ -1,2 +1,4 @@
 open-cv-competition/
 core/data/datasets/Agriculture-Vision-2021
+
+*/**/*.pyc
