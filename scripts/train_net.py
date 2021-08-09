@@ -1,6 +1,7 @@
 import argparse
 import os
 import sys
+
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import torch
 from core.config import cfg
@@ -39,14 +40,8 @@ def train(cfg):
     extra_checkpoint_data = checkpointer.load(cfg.MODEL.WEIGHT)
     arguments.update(extra_checkpoint_data)
 
-    train_data_loader = make_data_loader(
-        cfg,
-        split='train'
-    )
-    val_data_loader = make_data_loader(
-        cfg,
-        split='val'
-    )
+    train_data_loader = make_data_loader(cfg, split="train")
+    val_data_loader = make_data_loader(cfg, split="test")
 
     checkpoint_period = cfg.SOLVER.CHECKPOINT_PERIOD
 
@@ -76,8 +71,10 @@ def run_test(cfg, model):
             output_folders[idx] = output_folder
     else:
         raise RuntimeError("Output directory is missing!")
-    test_data_loaders = make_data_loader(cfg, split='test')
-    for output_folder, dataset_name, test_data_loader in zip(output_folders, dataset_names, test_data_loaders):
+    test_data_loaders = make_data_loader(cfg, split="test")
+    for output_folder, dataset_name, test_data_loader in zip(
+        output_folders, dataset_names, test_data_loaders
+    ):
         inference(
             model,
             test_data_loader,
@@ -112,7 +109,15 @@ def main():
     cfg.merge_from_file(args.config_file)
     cfg.merge_from_list(tuner_params_list)
 
-    cfg.update({'OUTPUT_DIR': os.path.join('./training_dir', os.path.basename(args.config_file).split('.yaml')[0], '_'.join([str(i) for i in tuner_params_list]))})
+    cfg.update(
+        {
+            "OUTPUT_DIR": os.path.join(
+                "./training_dir",
+                os.path.basename(args.config_file).split(".yaml")[0],
+                "_".join([str(i) for i in tuner_params_list]),
+            )
+        }
+    )
     cfg.freeze()
 
     os.environ["CUDA_VISIBLE_DEVICES"] = str(cfg.MODEL.GPU_NUM)

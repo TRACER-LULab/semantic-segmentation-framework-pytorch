@@ -8,7 +8,7 @@ MODEL:
   METRICS: ("Dice", )
 DATASETS:
   TRAIN: ("custom_dataset_train",)
-  VAL: ("custom_dataset_val",)
+  # VAL: ("custom_dataset_val",)
   TEST: ("custom_dataset_test",)
   NUM_CLASS: 2
   IGNORE_CHANNELS: (0, )
@@ -25,4 +25,3 @@ SOLVER:
   IMS_PER_BATCH_TRAIN: 8
   IMS_PER_BATCH_VAL: 1
   IMS_PER_BATCH_TEST: 1
-

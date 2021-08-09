@@ -31,13 +31,13 @@ def build_dataset(dataset_list, transforms, preprocessing, dataset_catalog, spli
         args = data["args"]
         args["preprocessing"] = preprocessing
         args["transforms"] = transforms
-        args['split'] = split
+        args["split"] = split
         # make dataset from factory
         dataset = factory(**args)
         datasets.append(dataset)
 
     # for testing and validation, return a list of datasets
-    if split == 'test':
+    if split == "test":
         return datasets
 
     # for training and validation, concatenate all datasets into a single one
@@ -48,47 +48,45 @@ def build_dataset(dataset_list, transforms, preprocessing, dataset_catalog, spli
     return [dataset]
 
 
-def make_batch_data_sampler(
-        sampler, images_per_batch
-):
+def make_batch_data_sampler(sampler, images_per_batch):
     batch_sampler = torch.utils.data.sampler.BatchSampler(
         sampler, images_per_batch, drop_last=False
     )
     return batch_sampler
 
 
-def make_data_loader(cfg, split='train'):
-    if split == 'train':
+def make_data_loader(cfg, split="train"):
+    if split == "train":
         images_per_batch = cfg.SOLVER.IMS_PER_BATCH_TRAIN
         shuffle = True
         dataset_list = cfg.DATASETS.TRAIN
-    elif split == 'val':
+    elif split == "val":
         images_per_batch = cfg.SOLVER.IMS_PER_BATCH_VAL
         shuffle = False
         dataset_list = cfg.DATASETS.VAL
-    elif split == 'test':
+    elif split == "test":
         images_per_batch = cfg.SOLVER.IMS_PER_BATCH_TEST
         shuffle = False
         dataset_list = cfg.DATASETS.TEST
     else:
         raise RuntimeError("Split not available: {}".format(split))
     num_workers = cfg.DATALOADER.NUM_WORKERS
-    paths_catalog = import_file(
-        "core.config.paths_catalog", cfg.PATHS_CATALOG, True
-    )
+    paths_catalog = import_file("core.config.paths_catalog", cfg.PATHS_CATALOG, True)
     DatasetCatalog = paths_catalog.DatasetCatalog
 
     transforms = Transforms.build_transforms(cfg, split)
-    preprocessing_fn = smp.encoders.get_preprocessing_fn(cfg.MODEL.ENCODER, cfg.MODEL.ENCODER_WEIGHTS)
+    preprocessing_fn = smp.encoders.get_preprocessing_fn(
+        cfg.MODEL.ENCODER, cfg.MODEL.ENCODER_WEIGHTS
+    )
     preprocessing = Transforms.get_preprocessing(preprocessing_fn)
-    datasets = build_dataset(dataset_list, transforms, preprocessing, DatasetCatalog, split)
+    datasets = build_dataset(
+        dataset_list, transforms, preprocessing, DatasetCatalog, split
+    )
 
     data_loaders = []
     for dataset in datasets:
         sampler = make_data_sampler(dataset, shuffle)
-        batch_sampler = make_batch_data_sampler(
-            sampler, images_per_batch
-        )
+        batch_sampler = make_batch_data_sampler(sampler, images_per_batch)
         # collator = BatchCollator(cfg.DATALOADER.SIZE_DIVISIBILITY)
         data_loader = torch.utils.data.DataLoader(
             dataset,
@@ -96,7 +94,7 @@ def make_data_loader(cfg, split='train'):
             batch_sampler=batch_sampler,
         )
         data_loaders.append(data_loader)
-    if split != 'test':
+    if split != "test":
         # during training and validation, a single (possibly concatenated) data_loader is returned
         assert len(data_loaders) == 1
         return data_loaders[0]
