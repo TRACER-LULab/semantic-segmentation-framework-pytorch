@@ -29,9 +29,11 @@ class CustomDataset(BaseDataset):
             preprocessing=None,
             split='train',
     ):
+        pre_image_names = os.listdir(self.images_dir)
+        self.ids = [f.split(".")[0] for f in preimage_names[0:10]]
         self.ids = os.listdir(images_dir)
-        self.images_fps = [os.path.join(images_dir, image_id) for image_id in self.ids]
-        self.masks_fps = [os.path.join(masks_dir, image_id) for image_id in self.ids]
+        self.images_fps = [os.path.join(images_dir, image_id+".jpg") for image_id in self.ids]
+        self.masks_fps = [os.path.join(masks_dir, image_id+".png") for image_id in self.ids]
 
         # convert str names to class values on masks
         self.class_values = [self.CLASSES.index(cls.lower()) for cls in classes]
@@ -48,7 +50,7 @@ class CustomDataset(BaseDataset):
         mask = cv2.imread(self.masks_fps[i], 0)
 
         # extract certain classes from mask (e.g. cars)
-        masks = [(mask == v) for v in self.class_values]
+        masks = [(mask == 255) for v in self.class_values]
         mask = np.stack(masks, axis=-1).astype('float')
 
         # apply augmentations

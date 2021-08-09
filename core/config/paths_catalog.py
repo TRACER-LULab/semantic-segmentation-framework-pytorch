@@ -4,8 +4,8 @@ import os
 class DatasetCatalog(object):
     DATASETS = {
         "custom_dataset_train": {
-            "images_dir": "/path/to/custom_dataset/train/img",
-            "masks_dir": "/path/to/custom_dataset/train/mask",
+            "images_dir": "core/data/datasets/Agriculture-Vision-2021/train/images/rgb",
+            "masks_dir": "core/data/datasets/Agriculture-Vision-2021/train/labels/weed_cluster",
             "classes": ['background', 'foreground'],
             "split": "train",
         },
@@ -16,8 +16,8 @@ class DatasetCatalog(object):
             "split": "val",
         },
         "custom_dataset_test": {
-            "images_dir": "/path/to/custom_dataset/test/img",
-            "masks_dir": "/path/to/custom_dataset/test/mask",
+            "images_dir": "core/data/datasets/Agriculture-Vision-2021/val/images/rgb",
+            "masks_dir": "core/data/datasets/Agriculture-Vision-2021/val/labels/weed_cluster",
             "classes": ['background', 'foreground'],
             "split": "test",
         },
